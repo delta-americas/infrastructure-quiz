@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C-Level Infrastructure Readiness Checklist</title>
+<style>
+  body { font-family: Arial, sans-serif; margin:0; padding:0; background:#fff; }
+  .container { max-width:1024px; margin:0 auto; padding:56px 16px; }
+  .delta-progression-bar { height:6px; background:#eee; margin-bottom:24px; border-radius:3px; }
+  h2 { font-size:clamp(22px,3vw,30px); font-weight:700; margin-bottom:8px; }
+  p { font-size:16px; color:#666; margin-bottom:32px; line-height:1.5; }
+  .quiz-grid { display:grid; gap:24px; }
+  .quiz-category { margin-bottom:32px; }
+  .quiz-item p { margin-bottom:8px; }
+  .quiz-btns { display:flex; flex-wrap:wrap; gap:8px; }
+  .quiz-btns button { padding:8px 16px; cursor:pointer; border:1px solid #ccc; border-radius:4px; background:#fff; }
+  .quiz-btns button.selected { background-color:#0078D4; color:#fff; border-color:#0078D4; }
+  #submitBtn:disabled { opacity:0.5; cursor:not-allowed; }
+  .result-box { padding-top:32px; }
+  .result-box p { font-size:14px; color:#666; margin-bottom:8px; }
+  .result-box h3 { font-size:clamp(22px,3vw,30px); font-weight:700; margin-bottom:16px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="delta-progression-bar"></div>
+  <h2>Take the C-Level Infrastructure Readiness Checklist</h2>
+  <p>Is your AI infrastructure strategy an asset or a liability? Answer the following questions candidly.</p>
+
+  <div class="quiz-grid" id="quizGrid">
+    <!-- Finance & Governance -->
+    <div class="quiz-category">
+      <h3>Finance & Governance</h3>
+      <div class="quiz-item" data-index="0"><p>1. Have energy price volatility and carbon pricing been incorporated into 5–10 year EBITDA sensitivity models?</p><div class="quiz-btns"><button data-value="true">Yes</button><button data-value="false">No</button></div></div>
+      <div class="quiz-item" data-index="1"><p>2. Can the true energy cost and carbon footprint of individual AI workloads be quantified?</p><div class="quiz-btns"><button data-value="true">Yes</button><button data-value="false">No</button></div></div>
+      <div class="quiz-item" data-index="2"><p>3. Is the current power and cooling architecture resilient to next-generation GPU density increases?</p><div class="quiz-btns"><button data-value="true">Yes</button><button data-value="false">No</button></div></div>
+    </div>
+    <!-- Resilience & Speed -->
+    <div class="quiz-category">
+      <h3>Resilience & Speed</h3>
+      <div class="quiz-item" data-index="3"><p>4. Have prefabrication and modular strategies been adopted to minimize Time-to-Power?</p><div class="quiz-btns"><button data-value="true">Yes</button><button data-value="false">No</button></div></div>
+      <div class="quiz-item" data-index="4"><p>5. Are active power buffering mechanisms deployed to manage GPU load volatility?</p><div class="quiz-btns"><button data-value="true">Yes</button><button data-value="false">No</button></div></div>
+      <div class="quiz-item" data-index="5"><p>6. Can the microgrid perform autonomous black start without grid dependency?</p><div class="quiz-btns"><button data-value="true">Yes</button><button data-value="false">No</button></div></div>
+    </div>
+    <!-- Sustainability & Compliance -->
+    <div class="quiz-category">
+      <h3>Sustainability & Compliance</h3>
+      <div class="quiz-item" data-index="6"><p>7. Are renewable energy and decarbonization strategies sufficient to pass future permitting reviews?</p><div class="quiz-btns"><button data-value="true">Yes</button><button data-value="false">No</button></div></div>
+      <div class="quiz-item" data-index="7"><p>8. Is ESG data auditable and based on real-time measurement rather than estimates?</p><div class="quiz-btns"><button data-value="true">Yes</button><button data-value="false">No</button></div></div>
+    </div>
+    <!-- Security & Future-Proofing -->
+    <div class="quiz-category">
+      <h3>Security & Future-Proofing</h3>
+      <div class="quiz-item" data-index="8"><p>9. Is physical-layer OT security (e.g., data diodes) deployed?</p><div class="quiz-btns"><button data-value="true">Yes</button><button data-value="false">No</button></div></div>
+      <div class="quiz-item" data-index="9"><p>10. Have next-generation architectures such as 800VDC or SOFC been evaluated?</p><div class="quiz-btns"><button data-value="true">Yes</button><button data-value="false">No</button></div></div>
+    </div>
+  </div>
+
+  <div style="padding-top:16px;" id="quizSubmit">
+    <button id="submitBtn" disabled>View Assessment</button>
+    <p id="answerHint">Please answer all 10 questions to see your results.</p>
+  </div>
+
+  <div id="resultBox" class="result-box" style="display:none;">
+    <p class="label">Assessment Results</p>
+    <p id="resultCount"></p>
+    <h3 id="resultLabel"></h3>
+    <p id="resultText"></p>
+    <button id="resetBtn">Retake Checklist</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const totalQuestions = 10;
+  const answers = Array(totalQuestions).fill(null);
+  const submitBtn = document.getElementById('submitBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const resultBox = document.getElementById('resultBox');
+  const quizSubmit = document.getElementById('quizSubmit');
+
+  document.querySelectorAll('.quiz-item .quiz-btns button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const item = btn.closest('.quiz-item');
+      const index = parseInt(item.dataset.index);
+      answers[index] = btn.dataset.value === 'true';
+      item.querySelectorAll('button').forEach(b=>b.classList.remove('selected'));
+      btn.classList.add('selected');
+      submitBtn.disabled = answers.includes(null);
+    });
+  });
+
+  submitBtn.addEventListener('click', ()=>{
+    quizSubmit.style.display='none';
+    resultBox.style.display='block';
+    const yesCount = answers.filter(a=>a===true).length;
+    document.getElementById('resultCount').textContent = `${yesCount} / ${totalQuestions} questions answered “Yes”`;
+    let label='', text='';
+    if(yesCount>=8){label='Strong Infrastructure'; text='Your AI infrastructure strategy is well-prepared for future demands.';}
+    else if(yesCount>=5){label='Moderate Infrastructure'; text='Some areas of your AI infrastructure need improvement.';}
+    else{label='Weak Infrastructure'; text='Your AI infrastructure strategy may become a liability without further planning.';}
+    document.getElementById('resultLabel').textContent = label;
+    document.getElementById('resultText').textContent = text;
+  });
+
+  resetBtn.addEventListener('click', ()=>{
+    answers.fill(null);
+    document.querySelectorAll('.quiz-item button').forEach(b=>b.classList.remove('selected'));
+    submitBtn.disabled = true;
+    resultBox.style.display='none';
+    quizSubmit.style.display='block';
+  });
+})();
+</script>
+</body>
+</html>
