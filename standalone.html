@@ -40,10 +40,18 @@ body {
 
 /* Progression Bar */
 .delta-progression-bar {
-  width: 80px;
-  height: 5px;
-  margin-bottom: 24px;
-  background: linear-gradient(90deg, var(--delta-blue), var(--delta-aqua), var(--delta-green));
+  display:block;
+  width:60px;height:4px;
+ background: linear-gradient(
+    90deg,
+    #0087dc 0%,
+    #0087dc 60%,
+    #64d7d7 60%,
+    #64d7d7 80%,
+    #b9eb5f 80%,
+    #b9eb5f 100%
+  );
+  margin-bottom:20px;border-radius:2px;
 }
 
 /* Buttons */
